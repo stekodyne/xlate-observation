@@ -1,0 +1,35 @@
+= Xlate Observation
+
+[[_overview]]
+== Overview
+Spring-based FHIR REST API with a little Swagger!
+
+
+=== Version information
+[%hardbreaks]
+__Version__ : 2.0
+
+
+=== Contact information
+[%hardbreaks]
+__Contact__ : Steffen Kory
+
+
+=== License information
+[%hardbreaks]
+__License__ : Apache License Version 2.0
+__License URL__ : https://github.com/IBM-Bluemix/news-aggregator/blob/master/LICENSE
+__Terms of service__ : http://www-03.ibm.com/software/sla/sladb.nsf/sla/bm?Open
+
+
+=== URI scheme
+[%hardbreaks]
+__Host__ : localhost:8080
+__BasePath__ : /
+
+<<<
+include::{generated}/observation/paths.adoc[]
+<<<
+include::{generated}/observation/definitions.adoc[]
+<<<
+include::{generated}/observation/security.adoc[]
