@@ -37,7 +37,7 @@ public class ObservationController extends RootController {
             @ApiResponse(code = 200, message = "Success", response = ORU_R01.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> toOru(@RequestParam String patient) {
+    public ResponseEntity<String> toOru(@RequestBody Observation observation) {
         ResponseEntity<String> response = null;
 
         observationService.toOru(new Observation());
@@ -48,7 +48,7 @@ public class ObservationController extends RootController {
     @ApiOperation(value = "toObservation", nickname = "toObservation")
     @RequestMapping(method = RequestMethod.GET, path = "/toObservation", produces = "x-application/fhir+json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "obx", value = "HL7 OBX", required = true, dataType = "string", paramType = "body", defaultValue = "")
+            @ApiImplicitParam(name = "oru", value = "HL7 OBX", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Observation.class),

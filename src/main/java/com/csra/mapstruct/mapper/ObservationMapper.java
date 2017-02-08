@@ -4,7 +4,6 @@ import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.hl7v2.model.v22.message.ORU_R01;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -22,8 +21,6 @@ public interface ObservationMapper {
     static Logger log = LoggerFactory.getLogger(ObservationMapper.class.getName());
 
     @Mappings({
-            @Mapping(source = "ien", target = "id"),
-            @Mapping(source = "patient", target = "subject")
     })
     Observation oruToObservation(ORU_R01 oru);
 

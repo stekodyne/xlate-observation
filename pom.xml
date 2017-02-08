@@ -274,7 +274,7 @@
                 </dependencies>
                 <configuration>
                     <sourceDirectory>${asciidoctor.input.directory}</sourceDirectory>
-                    <sourceDocumentName>chcs-api.adoc</sourceDocumentName>
+                    <sourceDocumentName>xlate-observation.adoc</sourceDocumentName>
                     <attributes>
                         <doctype>book</doctype>
                         <toc>left</toc>

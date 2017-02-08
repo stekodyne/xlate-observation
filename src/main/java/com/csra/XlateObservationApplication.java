@@ -42,7 +42,7 @@ public class XlateObservationApplication {
                 .groupName("Observation")
                 .apiInfo(apiInfo("FHIR/HL7 Observation Xlate Service", "Spring-based FHIR REST API with a little Swagger!"))
                 .select()
-                .paths(regex("/fhir/Observation.*"))
+                .paths(regex("/observation.*"))
                 .build()
                 .directModelSubstitute(XMLGregorianCalendar.class, String.class);
     }
