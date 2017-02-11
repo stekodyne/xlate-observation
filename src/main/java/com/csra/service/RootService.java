@@ -1,6 +1,5 @@
 package com.csra.service;
 
-import com.csra.mapstruct.mapper.ObservationMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,8 +12,5 @@ public class RootService {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    // Mapstruct Mappers
-    @Autowired
-    protected ObservationMapper observationMapper;
 
 }

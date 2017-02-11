@@ -1,6 +1,8 @@
 package com.csra;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.hl7v2.model.primitive.TSComponentOne;
+import ca.uhn.hl7v2.parser.ParserConfiguration;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
@@ -10,8 +12,6 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -44,7 +44,8 @@ public class XlateObservationApplication {
                 .select()
                 .paths(regex("/observation.*"))
                 .build()
-                .directModelSubstitute(XMLGregorianCalendar.class, String.class);
+                .directModelSubstitute(ParserConfiguration.class, Void.class)
+                .directModelSubstitute(TSComponentOne.class, Void.class);
     }
 
     private ApiInfo apiInfo(String title, String description) {
