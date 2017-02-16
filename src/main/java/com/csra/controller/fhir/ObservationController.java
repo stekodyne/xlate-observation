@@ -2,6 +2,7 @@ package com.csra.controller.fhir;
 
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v22.message.ORU_R01;
 import ca.uhn.hl7v2.model.v22.segment.OBX;
 import ca.uhn.hl7v2.parser.PipeParser;
@@ -64,7 +65,14 @@ public class ObservationController extends RootController {
     public ResponseEntity<String> toObservation(@RequestBody String oru) {
         ResponseEntity<String> response = null;
 
-        Observation observation = observationService.toObservation(new ORU_R01());
+        Message message = null;
+        try {
+            message = new PipeParser().parse(oru);
+        } catch (HL7Exception e) {
+            e.printStackTrace();
+        }
+
+        Observation observation = observationService.toObservation((ORU_R01) message);
         response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(observation), HttpStatus.OK);
 
         return response;
