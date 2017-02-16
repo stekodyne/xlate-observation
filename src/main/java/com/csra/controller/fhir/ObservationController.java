@@ -1,8 +1,10 @@
 package com.csra.controller.fhir;
 
 import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v22.message.ORU_R01;
 import ca.uhn.hl7v2.model.v22.segment.OBX;
+import ca.uhn.hl7v2.parser.PipeParser;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -10,6 +12,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +36,18 @@ public class ObservationController extends RootController {
             @ApiImplicitParam(name = "observation", value = "FHIR Observation", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = ORU_R01.class),
+            @ApiResponse(code = 200, message = "Success", response = String.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     public ResponseEntity<String> toOru(@RequestBody Observation observation) {
         ResponseEntity<String> response = null;
 
-        observationService.toOru(new Observation());
+        ORU_R01 oruR01 = observationService.toOru(observation);
+        try {
+            response = new ResponseEntity<String>(new PipeParser().encode(oruR01), HttpStatus.OK);
+        } catch (HL7Exception e) {
+            response = new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return response;
     }
@@ -57,6 +65,7 @@ public class ObservationController extends RootController {
         ResponseEntity<String> response = null;
 
         Observation observation = observationService.toObservation(new ORU_R01());
+        response = new ResponseEntity<String>(fhirContext.newJsonParser().encodeResourceToString(observation), HttpStatus.OK);
 
         return response;
     }
