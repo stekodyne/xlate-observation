@@ -28,7 +28,7 @@ public class ObservationController extends RootController {
     static Logger log = LoggerFactory.getLogger(ObservationController.class.getName());
 
     @ApiOperation(value = "toOru", nickname = "toOru")
-    @RequestMapping(method = RequestMethod.GET, path = "/toOru", produces = "x-application/hl7-v2+er7")
+    @RequestMapping(method = RequestMethod.POST, path = "/toOru", produces = "x-application/hl7-v2+er7")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "observation", value = "FHIR Observation", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
@@ -45,7 +45,7 @@ public class ObservationController extends RootController {
     }
 
     @ApiOperation(value = "toObservation", nickname = "toObservation")
-    @RequestMapping(method = RequestMethod.GET, path = "/toObservation", produces = "x-application/fhir+json")
+    @RequestMapping(method = RequestMethod.POST, path = "/toObservation", produces = "x-application/fhir+json")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "oru", value = "HL7 OBX", required = true, dataType = "string", paramType = "body", defaultValue = "")
     })
