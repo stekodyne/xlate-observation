@@ -40,10 +40,10 @@ public class ObservationController extends RootController {
             @ApiResponse(code = 200, message = "Success", response = String.class),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<String> toOru(@RequestBody Observation observation) {
+    public ResponseEntity<String> toOru(@RequestBody String observation) {
         ResponseEntity<String> response = null;
 
-        ORU_R01 oruR01 = observationService.toOru(observation);
+        ORU_R01 oruR01 = observationService.toOru((Observation) fhirContext.newJsonParser().parseResource(observation));
         try {
             response = new ResponseEntity<String>(new PipeParser().encode(oruR01), HttpStatus.OK);
         } catch (HL7Exception e) {
@@ -67,7 +67,7 @@ public class ObservationController extends RootController {
 
         Message message = null;
         try {
-            message = new PipeParser().parse(oru);
+            message = pipeParser.parse(oru.replaceAll("\n", "\r"));
         } catch (HL7Exception e) {
             e.printStackTrace();
         }

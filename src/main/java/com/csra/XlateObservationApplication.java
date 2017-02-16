@@ -3,6 +3,7 @@ package com.csra;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.model.primitive.TSComponentOne;
 import ca.uhn.hl7v2.parser.ParserConfiguration;
+import ca.uhn.hl7v2.parser.PipeParser;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +35,11 @@ public class XlateObservationApplication {
     public FhirContext fhirContext() {
         FhirContext fhirContext = FhirContext.forDstu2();
         return fhirContext;
+    }
+    @Bean
+    public PipeParser pipeParser() {
+        PipeParser pipeParser = new PipeParser();
+        return pipeParser;
     }
 
     @Bean

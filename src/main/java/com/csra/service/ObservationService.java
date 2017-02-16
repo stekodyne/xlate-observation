@@ -8,6 +8,7 @@ import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.valueset.ObservationStatusEnum;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.DecimalDt;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.DataTypeException;
@@ -15,12 +16,8 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.v22.datatype.TS;
 import ca.uhn.hl7v2.model.v22.datatype.CE;
-import ca.uhn.hl7v2.model.v22.datatype.CN;
 import ca.uhn.hl7v2.model.v22.datatype.ID;
-import ca.uhn.hl7v2.model.v22.datatype.NM;
 import ca.uhn.hl7v2.model.v22.datatype.SI;
-import ca.uhn.hl7v2.model.v22.datatype.ST;
-import ca.uhn.hl7v2.model.v22.datatype.TX;
 import ca.uhn.hl7v2.model.v22.group.ORU_R01_OBSERVATION;
 import ca.uhn.hl7v2.model.v22.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v22.group.ORU_R01_PATIENT_RESULT;
@@ -36,8 +33,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.st;
 
 /**
  * Created by steffen on 1/21/17.
@@ -111,7 +106,10 @@ public class ObservationService extends RootService {
 
                     }
                     value.setSystem(obx.getUnits().getNameOfCodingSystem().getValue());
-                    observation.setValue(value);
+
+                    Observation.Component component = new Observation.Component();
+                    component.setValue(value);
+                    observation.getComponent().add(component);
                 }
             }
         } catch (HL7Exception e) {
@@ -125,74 +123,54 @@ public class ObservationService extends RootService {
         ORU_R01 message = new ORU_R01();
 
         try {
-            QuantityDt value = (QuantityDt) observation.getValue();
-
             message.initQuickstart("ORU", "R01", "T");
 
             MSH msh = message.getMSH();
             ORU_R01_PATIENT_RESULT patientResult = message.getPATIENT_RESULT();
 
-            int i = 0;
-            for(IdentifierDt identifierDt : observation.getIdentifier()) {
+            Integer i = 0;
+            for(Observation.Component component : observation.getComponent()) {
+                QuantityDt value = (QuantityDt) component.getValue();
                 OBX obx = patientResult.insertORDER_OBSERVATION(i++).getOBSERVATION().getOBX();
+
                 SI si1 = obx.getSetIDObservationalSimple();
-                si1.setValue(identifierDt.getValue());
+                si1.setValue(i.toString());
+
+                ID id2 = obx.getValueType();
+                id2.setValue("CE");
+
+                CE ce3 = obx.getObservationIdentifier();
+                CodingDt coding = component.getCode().getCoding().get(0);
+                ce3.getIdentifier().setValue(coding.getCode());
+                ce3.getText().setValue(coding.getDisplay());
+                ce3.getNameOfCodingSystem().setValue(coding.getSystem());
+
+                CE ce = new CE(message);
+                ce.getIdentifier().setValue(value.getCode());
+                ce.getText().setValue(value.getValue().toString());
+                ce.getNameOfCodingSystem().setValue(value.getSystem());
+                Varies varies5 = obx.getObservationValue();
+                varies5.setData(ce);
+
+                CE ce6 = obx.getUnits();
+                ce6.getIdentifier().setValue(value.getCode());
+                ce6.getNameOfCodingSystem().setValue(value.getSystem());
+                ce6.getText().setValue(value.getUnit());
+
+                ID id11 = obx.getObservationResultStatus();
+                id11.setValue(observation.getStatus());
+
+                TS ts14 = obx.getDateTimeOfTheObservation();
+                try {
+                    if(observation.getEffective() instanceof DateTimeDt) {
+                        DateTimeDt date = (DateTimeDt) observation.getEffective();
+                        ts14.getTimeOfAnEvent().setValue(date.getValue().toString());
+                        ts14.getDegreeOfPrecision().setValue(date.getPrecision().toString());
+                    }
+                } catch (Exception e) {
+                    ts14.getTimeOfAnEvent().setValue(new Date());
+                }
             }
-
-            OBX obx = patientResult.getORDER_OBSERVATION().getOBSERVATION(0).getOBX();
-
-            ID id2 = obx.getValueType();
-            id2.setValue(value.getUnit());
-
-            CE ce3 = obx.getObservationIdentifier();
-            ce3.getIdentifier().setValue(observation.getCode().getElementSpecificId());
-            ce3.getText().setValue(observation.getCode().getText());
-            ce3.getNameOfCodingSystem().setValue(observation.getCode().getCoding().get(0).getDisplay());
-
-            ST st4 = obx.getObservationSubID();
-
-            CE ce = new CE(message);
-            ce.getIdentifier().setValue(value.getCode());
-            ce.getText().setValue(value.getValue().toString());
-            ce.getNameOfCodingSystem().setValue(value.getSystem());
-            Varies varies5 = obx.getObservationValue();
-            varies5.setData(ce);
-
-            CE ce6 = obx.getUnits();
-            ce6.getIdentifier().setValue(value.getCode());
-            ce6.getNameOfCodingSystem().setValue(value.getSystem());
-            ce6.getText().setValue(value.getUnit());
-
-            ST st7 = obx.getReferencesRange();
-            try {
-                st7.setValue(observation.getReferenceRange().get(0).getHigh().getValue().toString());
-            } catch (Exception e) {
-                st7.setValue("");
-            }
-
-
-            ID[] id8 = obx.getAbnormalFlags();
-
-            NM nm9 = obx.getProbability();
-
-            ID id10 = obx.getNatureOfAbnormalTest();
-
-            ID id11 = obx.getObservationResultStatus();
-            id2.setValue(observation.getStatus());
-
-            //TS ts12 = obx.getEffectiveDateLastObservationNormalValues();
-            ST st13 = obx.getUserDefinedAccessChecks();
-
-            TS ts14 = obx.getDateTimeOfTheObservation();
-            try {
-                ts14.getTimeOfAnEvent().setValue(((PeriodDt) observation.getEffective()).getStart().toString());
-            } catch (Exception e) {
-                ts14.getTimeOfAnEvent().setValue(new Date());
-            }
-            ts14.getDegreeOfPrecision().setValue("");
-
-            CE ce15 = obx.getProducerSID();
-            CN cn16 = obx.getResponsibleObserver();
 
         } catch (HL7Exception e) {
             e.printStackTrace();

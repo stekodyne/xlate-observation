@@ -1,6 +1,7 @@
 package com.csra.controller.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.hl7v2.parser.PipeParser;
 import com.csra.service.ObservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public abstract class RootController {
 
     @Autowired
     protected FhirContext fhirContext;
+
+    @Autowired
+    protected PipeParser pipeParser;
 
     @Autowired
     protected ObservationService observationService;
